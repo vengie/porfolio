@@ -884,8 +884,31 @@
           </div>
 
           <div class="col-lg-8 mt-5 mt-lg-0">
+            <form id="contact-frm" action="https://formspree.io/f/xzbqabpb" method="post" role="form">
+              <div class="row">
+                <div class="col-md-6 form-group">
+                  <input type="text" name="name" class="form-control" id="name" placeholder="Your Name" required>
+                </div>
+                <div class="col-md-6 form-group mt-3 mt-md-0">
+                  <input type="email" class="form-control" name="email" id="email" placeholder="Your Email" required>
+                </div>
+              </div>
+              <div class="form-group mt-3">
+                <input type="text" class="form-control" name="subject" id="subject" placeholder="Subject" required>
+              </div>
+              <div class="form-group mt-3">
+                <textarea class="form-control" name="message" rows="5" placeholder="Message" required></textarea>
+              </div>
+              <div class="my-3">
+                <!--<div class="loading">Loading</div>
+                <div class="error-message"></div>
+                <div class="sent-message">Your message has been sent. Thank you!</div>
+              </div>-->
+              <div class="text-center"><button type="submit">Send Message</button></div>
+              <p id="my-form-status"></p>
+            </form>
 
-            <form id="fs-frm" name="simple-contact-form" accept-charset="utf-8" action="https://formspree.io/f/xzbqabpb" method="post">
+            <!--<form id="fs-frm" name="simple-contact-form" accept-charset="utf-8" action="https://formspree.io/f/xzbqabpb" method="post">
               <fieldset id="fs-frm-inputs">
                 <label for="full-name">Full Name</label>
                 <input type="text" name="name" id="full-name" placeholder="First and Last" required="">
@@ -896,7 +919,7 @@
                 <input type="hidden" name="_subject" id="email-subject" value="Contact Form Submission">
               </fieldset>
               <input type="submit" value="Submit">
-            </form>
+            </form> -->
             <!--<form action="https://formspree.io/f/xzbqabpb" method="post" role="form" class="php-email-form">
               <div class="row">
                 <div class="col-md-6 form-group">
@@ -971,5 +994,37 @@
   <script src="assets/js/main.js"></script>
 
 </body>
+<script>
+  var form = document.getElementById("contact-frm");
+  
+  async function handleSubmit(event) {
+    event.preventDefault();
+    var status = document.getElementById("my-form-status");
+    var data = new FormData(event.target);
+    fetch(event.target.action, {
+      method: form.method,
+      body: data,
+      headers: {
+          'Accept': 'application/json'
+      }
+    }).then(response => {
+      if (response.ok) {
+        status.innerHTML = "Your message has been sent. Thank you!";
+        form.reset()
+      } else {
+        response.json().then(data => {
+          if (Object.hasOwn(data, 'errors')) {
+            status.innerHTML = data["errors"].map(error => error["message"]).join(", ")
+          } else {
+            status.innerHTML = "Oops! There was a problem submitting your form"
+          }
+        })
+      }
+    }).catch(error => {
+      status.innerHTML = "Oops! There was a problem submitting your form"
+    });
+  }
+  form.addEventListener("submit", handleSubmit)
+</script>
 
 </html>
